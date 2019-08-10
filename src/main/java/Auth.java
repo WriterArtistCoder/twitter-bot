@@ -14,10 +14,10 @@ public class Auth {
 			BufferedReader b = new BufferedReader(new FileReader("src/main/resources/auth.txt"));
 			ConfigurationBuilder cb = new ConfigurationBuilder();
 			cb.setDebugEnabled(true)
-			  .setOAuthConsumerKey("1pbhZTMDBBhv3QxXqjuyYFKsz")
-			  .setOAuthConsumerSecret("3cvrBjUlrMhCTQIlIakUafgdMLYuJaWloBvc6pDovzMjo9c76d")
-			  .setOAuthAccessToken("1124771899727159296-25DdZJmEX1Kar9A3nzX71FTOImwsMg")
-			  .setOAuthAccessTokenSecret("7bXbXZcMmQWZtAjGBX6MaLDd2VZlvepyX16NCdqbcUuQt");
+			  .setOAuthConsumerKey("")
+			  .setOAuthConsumerSecret("")
+			  .setOAuthAccessToken("")
+			  .setOAuthAccessTokenSecret("");
 			
 			TwitterFactory tf = new TwitterFactory(cb.build());
 			b.close();
