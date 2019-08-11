@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public class Runner {
 	
-	static String twitterFileName = "C:\\Users\\sodal\\twitter-bot.txt";
+	static String twitterFileName = "name of text file containing last tweet posted here";
 	
 	public static void main(String[] args) {
 		try {
