@@ -28,7 +28,7 @@ public class Tweeter {
 			e.printStackTrace();
 		}
 
-		String tweet = fr.titles.get(0)+"\n\nThis comic is under a CC-BY-SA 3.0 license.\nView the comic at "+fr.links.get(0)+".";
+		String tweet = fr.titles.get(0)+"\n\nThis #TinyStripz is under a CC-BY-SA 3.0 license.\nView it at "+fr.links.get(0)+".";
 		String comicNum = fr.titles.get(0).substring(1, fr.titles.get(0).indexOf(":"));
 		
 		try {
