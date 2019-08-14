@@ -16,7 +16,7 @@ public class Tweeter {
 	
 	// This file should store the latest tweet the twitter bot has made.
 	
-	public void run(String twitterFilename) {
+	public void run(String configFilename, String twitterFilename) {
 		FeedReader fr = new FeedReader();
 		
 		try {
@@ -32,7 +32,7 @@ public class Tweeter {
 		String comicNum = fr.titles.get(0).substring(1, fr.titles.get(0).indexOf(":"));
 		
 		try {
-			createTweet(tweet);
+			createTweet(tweet, configFilename);
 			
 			BufferedWriter bw = new BufferedWriter(new FileWriter(new File(twitterFilename)));
 			bw.write(comicNum);
@@ -41,7 +41,7 @@ public class Tweeter {
 		} catch (TwitterException e) {
 			if (tweet.length() > 280) {
 				try {
-					createTweet("Sorry, the tweet for today's comic was too long.\nIt is still available at tinystripz.blogspot.com.");
+					createTweet("Sorry, the tweet for today's comic was too long.\nIt is still available at tinystripz.blogspot.com.", configFilename);
 				} catch (TwitterException e1) {
 					e1.printStackTrace();
 				}
@@ -55,8 +55,8 @@ public class Tweeter {
 		}
 	}
 	
-	public static void createTweet(String tweet) throws TwitterException {
-	    Twitter twitter = Parser.getTwitterInstance();
+	public static void createTweet(String tweet, String configFilename) throws TwitterException {
+	    Twitter twitter = Parser.getTwitterInstance(configFilename);
 		
 	    StatusUpdate status = new StatusUpdate(tweet);
 	    status.setMedia(new File("src/main/resources/comic.jpg"));
