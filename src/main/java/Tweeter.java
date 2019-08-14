@@ -16,7 +16,7 @@ public class Tweeter {
 	
 	// This file should store the latest tweet the twitter bot has made.
 	
-	public void run() {
+	public void run(String twitterFilename) {
 		FeedReader fr = new FeedReader();
 		
 		try {
@@ -34,7 +34,7 @@ public class Tweeter {
 		try {
 			createTweet(tweet);
 			
-			BufferedWriter bw = new BufferedWriter(new FileWriter(new File(Runner.twitterFileName)));
+			BufferedWriter bw = new BufferedWriter(new FileWriter(new File(twitterFilename)));
 			bw.write(comicNum);
 			
 			bw.close();
@@ -51,13 +51,12 @@ public class Tweeter {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
 	public static void createTweet(String tweet) throws TwitterException {
-	    Twitter twitter = Auth.getTwitterInstance();
+	    Twitter twitter = Parser.getTwitterInstance();
 		
 	    StatusUpdate status = new StatusUpdate(tweet);
 	    status.setMedia(new File("src/main/resources/comic.jpg"));

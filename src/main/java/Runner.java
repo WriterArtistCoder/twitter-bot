@@ -5,31 +5,37 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class Runner {
-	
-	static String twitterFileName = "name of text file containing last tweet posted here";
-	
+
 	public static void main(String[] args) {
 		try {
 			FeedReader fr = new FeedReader();
-			BufferedReader br = new BufferedReader(new FileReader(new File(twitterFileName)));
-			
+			BufferedReader br = new BufferedReader(new FileReader(new File("src/main/resources/config.txt")));
+			br.readLine();
+			br.readLine();
+			br.readLine();
+			br.readLine();
+			// Gets to the line with the filename of the file we want
+
+			String fileName = br.readLine();
+			BufferedReader br1 = new BufferedReader(new FileReader(new File(fileName)));
+			br.close();
+
 			String comicNum = fr.titles.get(0).substring(1, fr.titles.get(0).indexOf(":"));
-			String fileNum = br.readLine();
-			System.out.println(fileNum);
+			String fileNum = br1.readLine();
 			
+			System.out.println(fileNum);
 			if (fileNum.equals(comicNum)) {
 				System.out.println("We're up to date, homie!");
 			} else {
 				System.out.println("Bro, we gotta tweet, quick!");
-				new Tweeter().run();
+				new Tweeter().run(fileName);
 			}
-			
-			br.close();
+
+			br1.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
 	}
 }
