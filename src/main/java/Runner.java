@@ -4,6 +4,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
+import twitter4j.JSONObject;
+
 public class Runner {
 
 	
@@ -15,21 +17,19 @@ public class Runner {
 		}
 	}
 	
-	public static void run(String configFilename) {
+	public static void run(String configFile) {
 		try {
-			FeedReader fr = new FeedReader();
-			BufferedReader br = new BufferedReader(new FileReader(new File(configFilename)));
-			br.readLine();
-			br.readLine();
-			br.readLine();
-			br.readLine();
-			// Gets to the line with the filename of the file we want
+			JSONObject comic = new APIReader(configFile).getComic();
+			BufferedReader br = new BufferedReader(new FileReader(new File(configFile)));
+			for (int i = 0; i < 4; i++) { // Gets to the line with the filename of the file we want
+				br.readLine();
+			}
 
-			String tweetFilename = br.readLine();
-			BufferedReader br1 = new BufferedReader(new FileReader(new File(tweetFilename)));
+			String tweetFile = br.readLine();
+			BufferedReader br1 = new BufferedReader(new FileReader(new File(tweetFile)));
 			br.close();
 
-			String comicNum = fr.titles.get(0).substring(1, fr.titles.get(0).indexOf(":"));
+			String comicNum = comic.getString("title").substring(1, comic.getString("title").indexOf(":"));
 			String fileNum = br1.readLine();
 			
 			System.out.println(fileNum);
@@ -37,7 +37,7 @@ public class Runner {
 				System.out.println("We're up to date, homie!");
 			} else {
 				System.out.println("Bro, we gotta tweet, quick!");
-				new Tweeter().run(configFilename, tweetFilename);
+				new Tweeter().run(configFile, tweetFile);
 			}
 
 			br1.close();

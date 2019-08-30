@@ -8,6 +8,7 @@ import java.net.URL;
 
 import javax.imageio.ImageIO;
 
+import twitter4j.JSONObject;
 import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -16,11 +17,13 @@ public class Tweeter {
 	
 	// This file should store the latest tweet the twitter bot has made.
 	
-	public void run(String configFilename, String twitterFilename) {
-		FeedReader fr = new FeedReader();
+	public void run(String configFile, String twitterFile) {
+		JSONObject comic = new APIReader(configFile).getComic();
 		
 		try {
-			URL url = new URL(fr.images.get(0));
+			String content = comic.getString("content");
+			URL url = new URL(content.substring(content.indexOf("https://1.bp.blogspot.com/"), content.indexOf("\"", content.indexOf("https://1.bp.blogspot.com/"))-1));
+			
 			BufferedImage img = ImageIO.read(url);
 			File file = new File("src/main/resources/comic.jpg");
 			ImageIO.write(img, "jpg", file);
@@ -28,20 +31,20 @@ public class Tweeter {
 			e.printStackTrace();
 		}
 
-		String tweet = fr.titles.get(0)+"\n\nThis #TinyStripz is under a CC-BY-SA 3.0 license.\nView it at "+fr.links.get(0)+".";
-		String comicNum = fr.titles.get(0).substring(1, fr.titles.get(0).indexOf(":"));
+		String tweet = comic.getString("title")+"\n\nThis #TinyStripz is under a CC-BY-SA 3.0 license.\nView it at "+comic.getString("url")+".";
+		String comicNum = comic.getString("title").substring(1, comic.getString("title").indexOf(":"));
 		
 		try {
-			createTweet(tweet, configFilename);
+			createTweet(tweet, configFile);
 			
-			BufferedWriter bw = new BufferedWriter(new FileWriter(new File(twitterFilename)));
+			BufferedWriter bw = new BufferedWriter(new FileWriter(new File(twitterFile)));
 			bw.write(comicNum);
 			
 			bw.close();
 		} catch (TwitterException e) {
 			if (tweet.length() > 280) {
 				try {
-					createTweet("Sorry, the tweet for today's comic was too long.\nIt is still available at tinystripz.blogspot.com.", configFilename);
+					createTweet("Sorry, the tweet for today's comic was too long.\nIt is still available at tinystripz.blogspot.com.", configFile);
 				} catch (TwitterException e1) {
 					e1.printStackTrace();
 				}
@@ -55,8 +58,8 @@ public class Tweeter {
 		}
 	}
 	
-	public static void createTweet(String tweet, String configFilename) throws TwitterException {
-	    Twitter twitter = Parser.getTwitterInstance(configFilename);
+	public static void createTweet(String tweet, String configFile) throws TwitterException {
+	    Twitter twitter = Parser.getTwitterInstance(configFile);
 		
 	    StatusUpdate status = new StatusUpdate(tweet);
 	    status.setMedia(new File("src/main/resources/comic.jpg"));

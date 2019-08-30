@@ -3,3 +3,4 @@
 <access key>
 <access secret>
 <file name of a text file containing the number of the last tweet posted>
+<blogger api key>

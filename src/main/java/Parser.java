@@ -9,9 +9,9 @@ import twitter4j.conf.ConfigurationBuilder;
 
 public class Parser {
 
-	public static Twitter getTwitterInstance(String configFilename) {
+	public static Twitter getTwitterInstance(String configFile) {
 		try {
-			BufferedReader br = new BufferedReader(new FileReader(new File(configFilename)));
+			BufferedReader br = new BufferedReader(new FileReader(new File(configFile)));
 
 			ConfigurationBuilder cb = new ConfigurationBuilder();
 			cb.setDebugEnabled(true)
