@@ -1,7 +1,6 @@
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
@@ -13,57 +12,111 @@ import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
+/**
+ * Tweet the comic.
+ * 
+ * @author https://tinystripz.com
+ *
+ */
 public class Tweeter {
-	
-	// This file should store the latest tweet the twitter bot has made.
-	
-	public void run(String configFile, String twitterFile) {
+
+	/**
+	 * Run the bot and do the tweeting. **WARNING:** This method will break with any
+	 * other than a `.jpg` file.
+	 * 
+	 * @param configFile  The configuration file containing API keys and other
+	 *                    information.
+	 * @param imageFile   The file to save the latest comic to.
+	 * @param twitterFile The file in which to write the number of the latest comic
+	 *                    tweeted.
+	 */
+	public void run(File configFile, File imageFile, File twitterFile) {
+		// Get the comic as a JSONObject
 		JSONObject comic = new APIReader(configFile).getComic();
-		
+
 		try {
-			String content = comic.getString("content");
-			URL url = new URL(content.substring(content.indexOf("https://1.bp.blogspot.com/"), content.indexOf("\"", content.indexOf("https://1.bp.blogspot.com/"))-1));
-			
-			BufferedImage img = ImageIO.read(url);
-			File file = new File("src/main/resources/comic.jpg");
+			String content = comic.getString("content"); // Get the HTML content of the comic
+			URL url = new URL(content.substring(content.indexOf("https://1.bp.blogspot.com/"),
+					content.indexOf("\"", content.indexOf("https://1.bp.blogspot.com/")) - 1)); // Extract the image
+																								// from the content
+			BufferedImage img = ImageIO.read(url); // Read a BufferedImage from the image URL
+
+			// Write the image to a file
+			File file = imageFile;
 			ImageIO.write(img, "jpg", file);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		String tweet = comic.getString("title")+"\n\nThis #TinyStripz is under a CC-BY-SA 3.0 license.\nView it at "+comic.getString("url")+".";
+		// The tweet to make
+		String tweet = comic.getString("title") + "\n\nThis #TinyStripz is under a CC-BY-SA 3.0 license.\nView it at "
+				+ comic.getString("url") + ".";
+		// Extract the comic number from its title
 		String comicNum = comic.getString("title").substring(1, comic.getString("title").indexOf(":"));
-		
+
 		try {
-			createTweet(tweet, configFile);
-			
-			BufferedWriter bw = new BufferedWriter(new FileWriter(new File(twitterFile)));
+			// Tweet the comic
+			createTweet(tweet, configFile, imageFile);
+
+			// Record the number of the latest comic tweeted
+			BufferedWriter bw = new BufferedWriter(new FileWriter(twitterFile));
 			bw.write(comicNum);
-			
+
+			// Close the writer
 			bw.close();
 		} catch (TwitterException e) {
+			// If the tweet is too long
 			if (tweet.length() > 280) {
 				try {
-					createTweet("Sorry, the tweet for today's comic was too long.\nIt is still available at tinystripz.blogspot.com.", configFile);
+					// Tweet an apology instead
+					createTweet(
+							"Sorry, we ran into a problem. The latest comic is still available at https://tinystripz.com!",
+							configFile);
 				} catch (TwitterException e1) {
 					e1.printStackTrace();
 				}
 			} else {
 				e.printStackTrace();
 			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	public static void createTweet(String tweet, String configFile) throws TwitterException {
-	    Twitter twitter = Parser.getTwitterInstance(configFile);
-		
-	    StatusUpdate status = new StatusUpdate(tweet);
-	    status.setMedia(new File("src/main/resources/comic.jpg"));
-	    
+
+	/**
+	 * Tweets text.
+	 * 
+	 * @param tweet      The text that goes with the image.
+	 * @param configFile The configuration file containing API keys and other
+	 *                   information.
+	 * @throws TwitterException
+	 */
+	public static void createTweet(String tweet, File configFile) throws TwitterException {
+		// Get a Twitter instance from the API keys
+		Twitter twitter = Parser.getTwitterInstance(configFile);
+
+		// Create a StatusUpdate containing the tweet and post it
+		StatusUpdate status = new StatusUpdate(tweet);
+		twitter.updateStatus(status);
+	}
+
+	/**
+	 * Tweets an image and text.
+	 * 
+	 * @param tweet      The text that goes with the image.
+	 * @param configFile The configuration file containing the API keys.
+	 * @param imageFile  The file containing the image.
+	 * @throws TwitterException
+	 */
+	public static void createTweet(String tweet, File configFile, File imageFile) throws TwitterException {
+		// Get a Twitter instance from the API keys
+		Twitter twitter = Parser.getTwitterInstance(configFile);
+
+		// Create a StatusUpdate containing the tweet and image file
+		StatusUpdate status = new StatusUpdate(tweet);
+		status.setMedia(imageFile);
+
+		// Post the StatusUpdate as a tweet
 		twitter.updateStatus(status);
 	}
 }
