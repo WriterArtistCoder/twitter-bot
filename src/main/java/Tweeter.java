@@ -36,8 +36,8 @@ public class Tweeter {
 
 		try {
 			String content = comic.getString("content"); // Get the HTML content of the comic
-			URL url = new URL(content.substring(content.indexOf("https://1.bp.blogspot.com/"),
-					content.indexOf("\"", content.indexOf("https://1.bp.blogspot.com/")) - 1)); // Extract the image
+			URL url = new URL(content.substring(content.indexOf("https://3.bp.blogspot.com/"),
+					content.indexOf("\"", content.indexOf("https://3.bp.blogspot.com/")) - 1)); // Extract the image
 																								// from the content
 			BufferedImage img = ImageIO.read(url); // Read a BufferedImage from the image URL
 
